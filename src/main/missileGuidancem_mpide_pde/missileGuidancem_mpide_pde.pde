@@ -37,6 +37,10 @@ double distance;// sqrt(pow(y2-y1,2)+pow(x2-x1,2))
 double velocity;// distance/time
 double elapsedTime = 1.23;
 double theta2Angle = 0.0000;
+double speed;
+double theta1;
+double droneX;
+double Vx;
 char elapsedTimeArray[5];
 char theta2AngleArray[7];
 
@@ -101,7 +105,8 @@ void loop() {
         
         double distance;// sqrt(pow(y2-y1,2)+pow(x2-x1,2))
         double speed;// distance/time
-        double theta;
+        double theta1;
+        double Vx;
 
         BTN1_state = digitalRead(BTN1);
         BTN2_state = digitalRead(BTN2);
@@ -147,7 +152,11 @@ void loop() {
         	        m = calculateSlope(x1, y1, x2, y2);
         		distance = calculateDistance(x1, y1, x2, y2);
         		speed = calculateSpeed(distance, count);
-        		theta = calculateAngle(m);
+        		theta1 = calculateAngle(m);
+                        setVx(speed, theta1);
+                        Vx = getVx();
+                        setDroneX(Vx, count);
+                        droneX = getDroneX();
                         //set the cursor to display launch angle
               	        IOShieldOled.setCursor(0,2);
                         //create a string to display the elapsed time on the OLED screen
@@ -156,7 +165,7 @@ void loop() {
                         //display it @OLED:
                         IOShieldOled.putString(displayTheta2AngleArray);
                         //convert the value to a char[] because we're using putString() :: also use sprintf() because we're converting a double :: see http://stackoverflow.com/questions/7462349/convert-double-value-to-a-char-array-in-c
-                        sprintf(theta2AngleArray, "%2.4f", theta);
+                        sprintf(theta2AngleArray, "%2.4f", droneX);
                         //append the elapsed time value to the string & display it @OLED:
                         IOShieldOled.putString(theta2AngleArray);
                         delay(1000);
@@ -169,6 +178,25 @@ void loop() {
                     }
                 }
             }
+}
+
+//v1x = v1 * cos(theta1) = 0.1885 * cos(450)= 0.1885 * 0.7071 = 0.1333 miles  seconds
+double getVx(){   
+   return Vx;
+}
+
+double setVx(double speed, double theta1){
+  double val = PI / 180.0;
+  Vx = speed * cos( theta1 * val );
+}
+
+
+double getDroneX(){
+  return droneX;
+}
+
+double setDroneX(double Vx, double time){
+ droneX =  7 + Vx * time;
 }
 
 double calculateSlope(int x1, int y1, int x2, int y2){
