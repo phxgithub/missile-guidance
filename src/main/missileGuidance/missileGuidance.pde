@@ -23,7 +23,7 @@ const int SW1 = 2;
 const int SW2 = 7;
 const int SW3 = 8;
 const int SW4 = 79;     //***** Note: label on the I/O board is 35 for uno32 only
-
+const double v2 = 0.4267;
 // variables:
 int BTN1_state = 0;         // variable for reading the pushbutton status
 int BTN2_state = 0;         // variable for reading the pushbutton status
@@ -41,6 +41,7 @@ double speed;
 double theta1;
 double droneX;
 double Vx;
+
 char elapsedTimeArray[5];
 char theta2AngleArray[7];
 
@@ -107,6 +108,7 @@ void loop() {
         double speed;// distance/time
         double theta1;
         double Vx;
+        double angle;
 
         BTN1_state = digitalRead(BTN1);
         BTN2_state = digitalRead(BTN2);
@@ -157,6 +159,8 @@ void loop() {
                         Vx = getVx();
                         setDroneX(Vx, count);
                         droneX = getDroneX();
+                       
+                        angle =calculateAngle(Vx, v2);
                         //set the cursor to display launch angle
               	        IOShieldOled.setCursor(0,2);
                         //create a string to display the elapsed time on the OLED screen
@@ -165,7 +169,7 @@ void loop() {
                         //display it @OLED:
                         IOShieldOled.putString(displayTheta2AngleArray);
                         //convert the value to a char[] because we're using putString() :: also use sprintf() because we're converting a double :: see http://stackoverflow.com/questions/7462349/convert-double-value-to-a-char-array-in-c
-                        sprintf(theta2AngleArray, "%2.4f", droneX);
+                        sprintf(theta2AngleArray, "%2.4f", angle);
                         //append the elapsed time value to the string & display it @OLED:
                         IOShieldOled.putString(theta2AngleArray);
                         delay(1000);
@@ -196,7 +200,7 @@ double getDroneX(){
 }
 
 double setDroneX(double Vx, double time){
- droneX =  7 + Vx * time;
+ droneX = Vx;
 }
 
 double calculateSlope(int x1, int y1, int x2, int y2){
@@ -214,4 +218,9 @@ double calculateSpeed(double distance, double time){
 double calculateAngle(double m){
    double val = 180.0 / PI;
    return atan (m) * val;
+}
+
+double calculateAngle(double velocityx, double velocity2)
+{
+  return acos(velocityx/velocity2) * 180/PI;
 }
