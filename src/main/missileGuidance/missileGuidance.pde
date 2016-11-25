@@ -17,6 +17,7 @@ int BTN1_state = 0; // variable for reading the pushbutton status
 int BTN2_state = 0; // variable for reading the pushbutton status
 
 double m; // slope
+double m2;
 double distance; // sqrt(pow(y2-y1,2)+pow(x2-x1,2))
 double velocity; // distance/time
 double elapsedTime = 1.23;
@@ -239,4 +240,10 @@ double calculateAngle(double m) {
 
 double calculateAngle(double velocityx, double velocity2) {
     return acos(velocityx / velocity2) * 180 / PI;
+}
+
+double calculateM2(double angle)
+{
+  
+ return tan(angle*PI/180); 
 }
