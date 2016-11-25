@@ -34,6 +34,7 @@ int SW3_state = 0;
 int SW4_state = 0; 
 
 double m;// slope
+double m2;
 double distance;// sqrt(pow(y2-y1,2)+pow(x2-x1,2))
 double velocity;// distance/time
 double elapsedTime = 1.23;
@@ -162,6 +163,9 @@ void loop() {
                         droneX = getDroneX();
                        
                         angle =calculateAngle(Vx, v2);
+			
+			 m2 = calculateM2(angle);
+			 
                         //set the cursor to display launch angle
               	        IOShieldOled.setCursor(0,2);
                         //create a string to display the elapsed time on the OLED screen
@@ -170,7 +174,7 @@ void loop() {
                         //display it @OLED:
                         IOShieldOled.putString(displayTheta2AngleArray);
                         //convert the value to a char[] because we're using putString() :: also use sprintf() because we're converting a double :: see http://stackoverflow.com/questions/7462349/convert-double-value-to-a-char-array-in-c
-                        sprintf(theta2AngleArray, "%2.4f", angle);
+                        sprintf(theta2AngleArray, "%2.4f", m2);
                         //append the elapsed time value to the string & display it @OLED:
                         IOShieldOled.putString(theta2AngleArray);
                         delay(1000);
@@ -224,4 +228,10 @@ double calculateAngle(double m){
 double calculateAngle(double velocityx, double velocity2)
 {
   return acos(velocityx/velocity2) * 180/PI;
+}
+
+double calculateM2(double angle)
+{
+  
+ return tan(angle*PI/180); 
 }
