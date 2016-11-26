@@ -152,11 +152,13 @@ void loop() {
                     IOShieldOled.putString(displayT1Array);
                     char displayT2Array[8];
                     double verify = verifyHit();
-                    sprintf(displayT2Array, "%2.5f", verify);
+                    sprintf(displayT2Array, "%2.5f", t2);
                     
                     IOShieldOled.setCursor(0, 3);
                     IOShieldOled.putString(displayT2Array);
-                    if (verifyHit() == 5) {
+                    
+                    if(fabs(t1-t2)<.01){
+                    //if (verifyHit() == 5) {
                         delay(10000);
                         IOShieldOled.clearBuffer();
                         IOShieldOled.setCursor(6, 3);
