@@ -92,10 +92,13 @@ void loop() {
             //otherwise
         else {
             BTN2_state = digitalRead(BTN2);
-            while (BTN2_state == LOW) {
-                delay(1000);
+            while (BTN2_state == LOW) {                 
+               // rely on delay to count seconds.  we want to display seconds and ms, so we delay by 1/10th of second and divide count by 10 to get seconds/ms. 
+               // We set 1/9.14th of a second for precision (results from testing).
+                delay(91.4);
                 count++;
-
+                double timer = count / 10;
+ 
                 //clear the display and reset the cursor to zero
                 IOShieldOled.clearBuffer();
 
@@ -107,7 +110,7 @@ void loop() {
                 //display it @OLED:
                 IOShieldOled.putString(displayElapsedTimeArray);
                 //convert the value to a char[] because we're using putString() :: also use sprintf() because we're converting a double :: see http://stackoverflow.com/questions/7462349/convert-double-value-to-a-char-array-in-c
-                sprintf(elapsedTimeArray, "%2.2f", count);
+                sprintf(elapsedTimeArray, "%2.2f", timer);
                 //append the elapsed time value to the string & display it @OLED:
                 IOShieldOled.putString(elapsedTimeArray);
                 IOShieldOled.updateDisplay();
@@ -119,12 +122,12 @@ void loop() {
                     digitalWrite(LD2, HIGH);
                     m = calculateSlope(x1, y1, x2, y2);
                     distance = calculateDistance(x1, y1, x2, y2);
-                    setSpeed(distance,count);
+                    setSpeed(distance,timer);
                     speed = getSpeed();
                     theta1 = calculateAngle(m);
                     setVx(speed, theta1);
                     Vx = getVx();
-                    setDroneX(Vx, count);
+                    setDroneX(Vx, timer);
                     droneX = getDroneX();
                     theta2 = calculateAngle(Vx, missileSpeed);
                     double d1 = getd1();
@@ -158,8 +161,8 @@ void loop() {
                     IOShieldOled.setCursor(0, 3);
                     IOShieldOled.putString(displayT2Array);
                     if (verifyHit()) {
-                        delay(10000);
-                        for (int ii = 0; ii < 5; ii++){
+                        delay(5000);
+                        for (int ii = 0; ii < 3; ii++){
                           delay(1000);
                           IOShieldOled.clearBuffer();
                           IOShieldOled.updateDisplay();
@@ -212,8 +215,8 @@ double verifyHit() {
     return (fabs(t1-t2)<.01);
 }
 
-void setSpeed(double distance, double count){
-  speed = calculateSpeed(distance, count);
+void setSpeed(double distance, double timer){
+  speed = calculateSpeed(distance, timer);
 }
 
 double getSpeed(){
