@@ -3,6 +3,7 @@
 // Coach
 
 #include <IOShieldOled.h>
+#include <string.h>
 
 // set pin numbers:
 const int BTN1 = 4; // the number of the pushbutton pin
@@ -118,7 +119,8 @@ void loop() {
                     digitalWrite(LD2, HIGH);
                     m = calculateSlope(x1, y1, x2, y2);
                     distance = calculateDistance(x1, y1, x2, y2);
-                    speed = calculateSpeed(distance, count);
+                    setSpeed(distance,count);
+                    speed = getSpeed();
                     theta1 = calculateAngle(m);
                     setVx(speed, theta1);
                     Vx = getVx();
@@ -142,29 +144,32 @@ void loop() {
                     //display it @OLED:
                     IOShieldOled.putString(displayTheta2AngleArray);
                     //convert the value to a char[] because we're using putString() :: also use sprintf() because we're converting a double :: see http://stackoverflow.com/questions/7462349/convert-double-value-to-a-char-array-in-c
-                    sprintf(theta2AngleArray, "%2.6f", theta2);
+                    sprintf(theta2AngleArray, "%2.2f", theta2);
                     //append the elapsed time value to the string & display it @OLED:
                     IOShieldOled.putString(theta2AngleArray);
                     //lets display t1 and t2 so we can compare its' value to 1
                     char displayT1Array[8];
-                    sprintf(displayT1Array, "%2.6f", t1);
+                    sprintf(displayT1Array, "%2.2f", t1);
                     IOShieldOled.setCursor(0, 2);
                     IOShieldOled.putString(displayT1Array);
                     char displayT2Array[8];
                     double verify = verifyHit();
-                    sprintf(displayT2Array, "%2.5f", verify);
-                    
+                    sprintf(displayT2Array, "%2.2f", verify);                    
                     IOShieldOled.setCursor(0, 3);
                     IOShieldOled.putString(displayT2Array);
-                    if (verifyHit() == 5) {
+                    if (verifyHit()) {
                         delay(10000);
-                        IOShieldOled.clearBuffer();
-                        IOShieldOled.setCursor(6, 3);
-                        String displayHit = "HIT!";
-                        char displayHitArray[15];
-                        displayHit.toCharArray(displayHitArray, 15);
-                        IOShieldOled.putString(displayHitArray);
-                    }
+                        for (int ii = 0; ii < 5; ii++){
+                          delay(1000);
+                          IOShieldOled.clearBuffer();
+                          IOShieldOled.updateDisplay();
+                          delay(1000);
+                          String displayHit = "HIT!";
+                          char displayHitArray[20];
+                          displayHit.toCharArray(displayHitArray, 5);
+                          IOShieldOled.setCursor(8, 1);                          
+                          IOShieldOled.putString(displayHitArray);
+                        }
                     delay(1000);
                     digitalWrite(LD1, LOW);
                     delay(1000);
@@ -172,6 +177,7 @@ void loop() {
                     break;
                 }
 
+                }
             }
         }
     }
@@ -187,7 +193,6 @@ double InterceptionY() {
 }
 
 //missile path B to target
-
 double getd2() {
     double d2x = InterceptionX() - 7;
     double d2y = InterceptionY();
@@ -195,28 +200,27 @@ double getd2() {
 }
 
 //drone path P2 to target
-
 double getd1() {
     double d1x = InterceptionX() - 7;
     double d1y = InterceptionY() - 8;
     return sqrt(pow((d1x), 2) + pow((d1y), 2));
 }
 
-int verifyHit() {
-    //Time for the drone to travel from P2 to target
-    double t1 = getd1() / speed;
-    
-    //Time for the missile to travel from B to target
-    double t2 = getd2() / missileSpeed;
-    
-    if (t1 == t2){
-      return 1;
-    } else {
-        return 5.00;
-    }
+double verifyHit() {  
+    double t1 = getd1() / speed;   //Time for the drone to travel from P2 to target 
+    double t2 = getd2() / missileSpeed; //Time for the missile to travel from B to target
+    return (fabs(t1-t2)<.01);
 }
 
-//v1x = v1 * cos(theta1) = 0.1885 * cos(450)= 0.1885 * 0.7071 = 0.1333 miles  seconds
+void setSpeed(double distance, double count){
+  speed = calculateSpeed(distance, count);
+}
+
+double getSpeed(){
+  return speed;
+}
+
+//v1x = v1 * cos(theta1) :: v1 = distance/time, theta1 = tan-1(m1) :: m1 =  (y2-y1)/(x2-x1)
 double getVx() {
     return Vx;
 }
