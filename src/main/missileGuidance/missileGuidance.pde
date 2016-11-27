@@ -160,7 +160,30 @@ void loop() {
                     sprintf(displayT2Array, "%2.2f", verify);                    
                     IOShieldOled.setCursor(0, 3);
                     IOShieldOled.putString(displayT2Array);
-                    if (verifyHit()) {
+                     
+                    if(timer < 4.7)
+                    {
+                      delay(5000);
+                        for (int ii = 0; ii < 3; ii++){
+                          delay(1000);
+                          IOShieldOled.clearBuffer();
+                          IOShieldOled.updateDisplay();
+                          delay(1000);
+                          String displayTooFast = "Drone is 2 fast!";
+                          char displayTooFastArray[20];
+                          displayTooFast.toCharArray(displayTooFastArray, 19);
+                          IOShieldOled.setCursor(0, 1);                          
+                          IOShieldOled.putString(displayTooFastArray);
+                      
+                    }
+                     delay(1000);
+                    digitalWrite(LD1, LOW);
+                    delay(1000);
+                    digitalWrite(LD2, LOW);
+                    break;
+                    }
+                   
+                   if (verifyHit()) {
                         delay(5000);
                         for (int ii = 0; ii < 3; ii++){
                           delay(1000);
