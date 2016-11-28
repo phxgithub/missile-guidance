@@ -1,6 +1,6 @@
-// EX-SimpleStateMachine-Starter
-// 6-19-2014
-// Coach
+// Application Missile Guidance Control
+// 11-28-2016
+// James Zuckerman and Matt Evans
 
 #include <IOShieldOled.h>
 #include <string.h>
